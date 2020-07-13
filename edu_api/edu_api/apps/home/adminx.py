@@ -1,7 +1,7 @@
 import xadmin
 from xadmin import views
 
-from home.models import Banner
+from home.models import Banner,Nav
 
 
 class BaseSetting(object):
@@ -31,8 +31,8 @@ class BannerInfo(object):
 xadmin.site.register(Banner, BannerInfo)
 
 
-# class NavInfo(object):
-#     list_display = ["title", "orders", "is_show"]
-#
-#
-# xadmin.site.register(Nav, NavInfo)
+class NavInfo(object):
+    list_display = ["title", "orders", "is_show", ]
+
+
+xadmin.site.register(Nav, NavInfo)

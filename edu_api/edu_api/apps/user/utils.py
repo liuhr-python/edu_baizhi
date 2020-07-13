@@ -13,7 +13,7 @@ def jwt_response_payload_handler(token, user=None, request=None):
     }
 
 
-# 根据账号获取用户
+# # 根据账号获取用户(手机号与用户名封装)
 def get_user_by_account(account):
     try:
         user = UserInfo.objects.filter(Q(username=account) | Q(phone=account)).first()
@@ -22,6 +22,8 @@ def get_user_by_account(account):
     else:
         return user
 
+
+# 自定义多条件登录类
 
 class UserAuthBackend(ModelBackend):
 

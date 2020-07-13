@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
-
+import datetime
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -30,10 +30,9 @@ SECRET_KEY = 'o(**qiwv6)v!o!(#3m6kauzax)$7r*xcwjux3i3=(2k08d+u^v'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-            'api.baizhishop.com',
-            'www.baizhishop.com'
-                 ]
-
+    'api.baizhishop.com',
+    'www.baizhishop.com'
+]
 
 # Application definition
 
@@ -53,6 +52,7 @@ INSTALLED_APPS = [
     'reversion',
 
     'home',
+    'user'
 ]
 
 MIDDLEWARE = [
@@ -88,21 +88,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'edu_api.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'edu_api',
+        'NAME': 'edu_api02',
         'HOST': 'localhost',
         'PORT': 3306,
         'USER': 'root',
         'PASSWORD': '980514'
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -122,7 +120,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
@@ -135,7 +132,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
@@ -205,5 +201,53 @@ LOGGING = {
 REST_FRAMEWORK = {
     # 全局异常配置
     "EXCEPTION_HANDLER": "utils.exceptions.exception_handler",
+    # 添加认证方式
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ],
 }
 
+# jwt配置
+JWT_AUTH = {
+    # 有效时间
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=300),  # import datetime
+    # 自定义jwt返回值的格式方法
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'user.utils.jwt_response_payload_handler',
+}
+
+# 注册自定义用户模型 格式必须是app.表明
+AUTH_USER_MODEL = 'user.UserInfo'
+
+# 自定义多条件登录
+AUTHENTICATION_BACKENDS = [
+    'user.utils.UserAuthBackend',
+]
+
+
+# django 连接redis设置
+
+CACHES = {
+    # 默认库
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        # 连接的redis所在服务的端口以及ip
+        "LOCATION": "redis://127.0.0.1:6379/0",
+        # 使用客户端的方式
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+
+    # 验证码储存位置
+    "sms_code": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        # 连接的redis所在服务的端口以及ip
+        "LOCATION": "redis://127.0.0.1:6379/15",
+        # 使用客户端的方式
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+}

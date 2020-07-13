@@ -4,6 +4,7 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 
+
 // axios配置
 import axios from "axios";
 
@@ -20,13 +21,17 @@ import "../static/css/global.css"
 
 // 自定义域名
 import settings from "./settings";
+
 Vue.prototype.$settings = settings;
 Vue.config.productionTip = false
 
+// 导入极验
+import "../static/js/gt.js"
+
 /* eslint-disable no-new */
 new Vue({
-  el: '#app',
-  router,
-  components: { App },
-  template: '<App/>'
+    el: '#app',
+    router,
+    components: {App},
+    template: '<App/>'
 })

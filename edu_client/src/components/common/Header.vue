@@ -6,19 +6,37 @@
                     <router-link to="/"><img src="/static/image/logo.png" alt=""></router-link>
                 </div>
                 <ul class="nav full-left">
-                    <li><span>Java进阶之路</span></li>
-                    <li><span>大数据成功法门</span></li>
-                    <li><span>Python全栈</span></li>
-                    <li><span>人工智能的魅力</span></li>
-                    <li><span>百知教育</span></li>
+                    <li v-for="(nav, index) in nav_list" :key="index">
+                        <a href="" v-if="nav.position==1">{{nav.title}}</a>
+                        <!--                项目外的连接        -->
+                        <!--<span v-if="nav.is_site"><a :href="nav.link">{{nav.title}}</a></span>-->
+                        <!--&lt;!&ndash;                本项目的路由        &ndash;&gt;-->
+                        <!--<span v-else><router-link :to="nav.link">{{nav.title}}</router-link></span>-->
+                    </li>
                 </ul>
-                <div class="login-bar full-right">
+
+                <!--          用户存在      -->
+                <div class="login-bar full-right" v-if="token">
                     <div class="shop-cart full-left">
                         <img src="/static/image/" alt="">
                         <span><router-link to="/cart">购物车</router-link></span>
                     </div>
                     <div class="login-box full-left">
-                        <span>登录</span>
+                        <router-link to="/home/login/">个人中心</router-link>
+                        &nbsp;|&nbsp;
+                        <router-link to="/home/login">退出登录</router-link>
+
+                    </div>
+                </div>
+                <!--          用户不存在      -->
+                <div class="login-bar full-right" v-else>
+                    <div class="shop-cart full-left">
+                        <img src="/static/image/" alt="">
+                        <span><router-link to="/cart">购物车</router-link></span>
+                    </div>
+                    <div class="login-box full-left">
+                        <!--<span>{{localStorage.username}}</span>-->
+                        <router-link to="/home/login/">登录</router-link>
                         &nbsp;|&nbsp;
                         <span>注册</span>
                     </div>
@@ -30,7 +48,35 @@
 
 <script>
     export default {
-        name: "Header"
+        name: "Header",
+        data() {
+            return {
+                nav_list: [],
+                token: "",
+            }
+        },
+        created() {
+            this.get_nav()
+            this.get_token()
+        },
+        methods: {
+            // 获取token  确定用户登录状态
+            get_token() {
+                this.token = localStorage.user_token || sessionStorage.user_token;
+                // return this.token;
+            },
+            // 获取导航栏的方法
+            get_nav() {
+                this.$axios({
+                    url: this.$settings.HOST + "home/nav/",
+                    methods: "get",
+                }).then(response => {
+                    this.nav_list = response.data;
+                }).catch(error => {
+                    console.log(error.response);
+                })
+            },
+        }
     }
 </script>
 
